@@ -1,21 +1,20 @@
-.ORIG x3000             ; start the program at location x3000
-
-ADD R1,R1,#1            ;数列从小到大顺序为R7,R1,R2,R3
+.ORIG x3000
+ADD R1,R1,#1
 ADD R2,R2,#1
 ADD R3,R3,#2
-LOOP ADD R7,R1,#0       ;按照上面的顺序分别向左移动
+LOOP ADD R7,R1,#0
 ADD R1,R2,#0
 ADD R2,R3,#0
-ADD R3,R7,R7            ;移动完毕计算新的R3
+ADD R3,R7,R7
 ADD R3,R2,R3
 ADD R0,R0,#-1
 BRzp LOOP
 LD R6,forAND
 AND R7,R7,R6
+HALT
 forAND .FILL x03FF
-.FILL x03A2;F(20)
-.FILL x0002;F(02)
-.FILL x000A;F(05)
-.FILL x0356;F(99)
-
+Fa .FILL x03A2
+Fb .FILL x0002
+Fc .FILL x000A
+Fd .FILL x0356
 .END
