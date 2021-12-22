@@ -96,11 +96,17 @@ int RecognizeNumberValue(std::string s)
 {
     // Convert string s into a number
     int sum = 0;
-    if (s[0] == 'x')
+    int weight = 1;
+    if (s[0] == 'X')
     {
-        s.erase(0);
-        int i = s.length() - 1;
-        while (i >= 0)
+        s.erase(0, 1);
+        int len = s.length(), i = 0;
+        if (s[0] == '-')
+        {
+            weight = -1;
+            s.erase(0, 1);
+        }
+        while (i < len)
         {
             if (s[i] >= '0' && s[i] <= '9')
             {
@@ -112,33 +118,34 @@ int RecognizeNumberValue(std::string s)
                 sum *= 16;
                 sum += s[i] - 'A' + 10;
             }
-            else if (s[i] == '-' && i == 0)
-                sum *= (-1);
             else
                 return std::numeric_limits<int>::max();
-            i--;
+            i++;
         }
     }
     else
     {
         if (s[0] == '#')
-            s.erase(0);
-        int i = s.length() - 1;
-        while (i >= 0)
+            s.erase(0, 1);
+        if (s[0] == '-')
+        {
+            weight = -1;
+            s.erase(0, 1);
+        }
+        int len = s.length(), i = 0;
+        while (i < len)
         {
             if (s[i] >= '0' && s[i] <= '9')
             {
                 sum *= 10;
                 sum += s[i] - '0';
             }
-            else if (s[i] == '-' && i == 0)
-                sum *= (-1);
             else
                 return std::numeric_limits<int>::max();
-            i--;
+            i++;
         }
     }
-    return sum;
+    return weight * sum;
 }
 
 std::string NumberToAssemble(const int &number)
@@ -192,7 +199,8 @@ std::string assembler::TranslateOprand(int current_address, std::string str, int
     {
         // str is a label
         int offset = item.getVal() - current_address - 1;
-        return NumberToAssemble(offset).substr(str.length() - opcode_length);
+        std::string sTemp = NumberToAssemble(offset);
+        return sTemp.substr(16 - opcode_length);
     }
     if (str[0] == 'R')
     {
@@ -213,7 +221,7 @@ std::string assembler::TranslateOprand(int current_address, std::string str, int
     else
     {
         // str is an immediate number
-        return NumberToAssemble(str).substr(str.length() - opcode_length);
+        return NumberToAssemble(str).substr(16 - opcode_length);
     }
 }
 
@@ -272,8 +280,8 @@ int assembler::assemble(std::string input_filename, std::string output_filename)
             else
             {
                 // Split content and comment
-                auto comment_str = line.substr(0, comment_position);
-                auto content_str = line.substr(comment_position);
+                auto content_str = line.substr(0, comment_position);
+                auto comment_str = line.substr(comment_position);
                 // Delete the leading whitespace and the trailing whitespace
                 comment_str = Trim(comment_str);
                 content_str = Trim(content_str);
@@ -426,6 +434,7 @@ int assembler::assemble(std::string input_filename, std::string output_filename)
         // Store the name of the label
         auto label_name = word;
         // Split the second word in the line
+        word = "";
         line_stringstream >> word;
         if (IsLC3Command(word) != -1 || IsLC3TrapRoutine(word) != -1 || word == "")
         {
@@ -580,11 +589,17 @@ int assembler::assemble(std::string input_filename, std::string output_filename)
                 else
                     output_line = "0000000000000000";
                 output_file << output_line << std::endl;
-                for (int i = 1; i < num; i++)
-                {
-                    output_file << std::hex << file_address[line_index] + i << ": ";
-                    output_file << output_line << std::endl;
-                }
+                if (gIsDebugMode == 1)
+                    for (int i = 1; i < num; i++)
+                    {
+                        output_file << std::hex << file_address[line_index] + i << ": ";
+                        output_file << output_line << std::endl;
+                    }
+                else
+                    for (int i = 1; i < num; i++)
+                    {
+                        output_file << output_line << std::endl;
+                    }
             }
             else if (word == ".STRINGZ")
             {
@@ -595,20 +610,32 @@ int assembler::assemble(std::string input_filename, std::string output_filename)
                 if (gIsHexMode)
                 {
                     output_file << ConvertBin2Hex(NumberToAssemble((int)str[1])) << std::endl;
-                    for (int i = 2; i < num - 1; i++)
-                    {
-                        output_file << std::hex << file_address[line_index] + i << ": ";
-                        output_file << ConvertBin2Hex(NumberToAssemble((int)str[i])) << std::endl;
-                    }
+                    if (gIsDebugMode == 1)
+                        for (int i = 2; i < num - 1; i++)
+                        {
+                            output_file << std::hex << file_address[line_index] + i << ": ";
+                            output_file << ConvertBin2Hex(NumberToAssemble((int)str[i])) << std::endl;
+                        }
+                    else
+                        for (int i = 2; i < num - 1; i++)
+                        {
+                            output_file << ConvertBin2Hex(NumberToAssemble((int)str[i])) << std::endl;
+                        }
                 }
                 else
                 {
                     output_file << NumberToAssemble((int)str[1]) << std::endl;
-                    for (int i = 2; i < num - 1; i++)
-                    {
-                        output_file << std::hex << file_address[line_index] + i << ": ";
-                        output_file << NumberToAssemble((int)str[i]) << std::endl;
-                    }
+                    if (gIsDebugMode == 1)
+                        for (int i = 2; i < num - 1; i++)
+                        {
+                            output_file << std::hex << file_address[line_index] + i << ": ";
+                            output_file << NumberToAssemble((int)str[i]) << std::endl;
+                        }
+                    else
+                        for (int i = 2; i < num - 1; i++)
+                        {
+                            output_file << NumberToAssemble((int)str[i]) << std::endl;
+                        }
                 }
             }
             continue;
@@ -793,7 +820,7 @@ int assembler::assemble(std::string input_filename, std::string output_filename)
                         // @ Error parameter numbers
                         return -30;
                     }
-                    result_line += TranslateOprand(current_address, parameter_list[0],11);
+                    result_line += TranslateOprand(current_address, parameter_list[0], 11);
                     break;
                 case 12:
                     // "JSRR"
@@ -815,7 +842,7 @@ int assembler::assemble(std::string input_filename, std::string output_filename)
                         return -30;
                     }
                     result_line += TranslateOprand(current_address, parameter_list[0]);
-                    result_line += TranslateOprand(current_address, parameter_list[1],9);
+                    result_line += TranslateOprand(current_address, parameter_list[1], 9);
                     break;
                 case 14:
                     // "LDI"
@@ -826,7 +853,7 @@ int assembler::assemble(std::string input_filename, std::string output_filename)
                         return -30;
                     }
                     result_line += TranslateOprand(current_address, parameter_list[0]);
-                    result_line += TranslateOprand(current_address, parameter_list[1],9);
+                    result_line += TranslateOprand(current_address, parameter_list[1], 9);
                     break;
                 case 15:
                     // "LDR"
@@ -838,7 +865,7 @@ int assembler::assemble(std::string input_filename, std::string output_filename)
                     }
                     result_line += TranslateOprand(current_address, parameter_list[0]);
                     result_line += TranslateOprand(current_address, parameter_list[1]);
-                    result_line += TranslateOprand(current_address, parameter_list[2],6);
+                    result_line += TranslateOprand(current_address, parameter_list[2], 6);
                     break;
                 case 16:
                     // "LEA"
@@ -849,7 +876,7 @@ int assembler::assemble(std::string input_filename, std::string output_filename)
                         return -30;
                     }
                     result_line += TranslateOprand(current_address, parameter_list[0]);
-                    result_line += TranslateOprand(current_address, parameter_list[1],9);
+                    result_line += TranslateOprand(current_address, parameter_list[1], 9);
                     break;
                 case 17:
                     // "NOT"
@@ -860,7 +887,8 @@ int assembler::assemble(std::string input_filename, std::string output_filename)
                         return -30;
                     }
                     result_line += TranslateOprand(current_address, parameter_list[0]);
-                    result_line += TranslateOprand(current_address, parameter_list[1]);result_line += "111111";
+                    result_line += TranslateOprand(current_address, parameter_list[1]);
+                    result_line += "111111";
                     break;
                 case 18:
                     // RET
@@ -912,7 +940,7 @@ int assembler::assemble(std::string input_filename, std::string output_filename)
                     }
                     result_line += TranslateOprand(current_address, parameter_list[0]);
                     result_line += TranslateOprand(current_address, parameter_list[1]);
-                    result_line += TranslateOprand(current_address, parameter_list[2],6);
+                    result_line += TranslateOprand(current_address, parameter_list[2], 6);
                     break;
                 case 23:
                     // TRAP

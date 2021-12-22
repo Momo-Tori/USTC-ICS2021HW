@@ -111,7 +111,7 @@ inline std::string &LeftTrim(std::string &s, const char *t = " \t\n\r\f\v") {
     auto temp=std::find(begin,end,s[0]);
     while(temp!=end)
     {
-        s.erase(0);
+        s.erase(0,1);
         temp=std::find(begin,end,s[0]);
     }
     return s;
