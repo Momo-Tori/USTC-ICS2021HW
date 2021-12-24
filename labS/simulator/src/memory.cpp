@@ -17,16 +17,20 @@ namespace virtual_machine_nsp
         input_file.open(filename);
         std::string line;
         int i = beginning_address;
-        getline(input_file, line);
         while (!input_file.eof())
+        {
+            getline(input_file, line);
             if (line.length() == 16 || line.length() == 0)
             {
                 memory[i] = TranslateInstruction(line);
-                getline(input_file, line);
                 i++;
             }
             else
+            {
+                std::cout<<"input error."<<std::endl;
                 exit(-1); //输入文件错误
+                }
+        }
         while (i < kVirtualMachineMemorySize)
         {
             memory[i] = 0;
