@@ -7,9 +7,12 @@
  */
 
 #include "register.h"
+#include <bitset>
 
-namespace virtual_machine_nsp {
-    std::ostream& operator<<(std::ostream& os, const register_tp& reg) {
+namespace virtual_machine_nsp
+{
+    std::ostream &operator<<(std::ostream &os, const register_tp &reg)
+    {
         os << "\e[1mR0\e[0m = " << std::hex << reg[R_R0] << ", ";
         os << "\e[1mR1\e[0m = " << std::hex << reg[R_R1] << ", ";
         os << "\e[1mR2\e[0m = " << std::hex << reg[R_R2] << ", ";
