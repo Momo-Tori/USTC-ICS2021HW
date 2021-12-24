@@ -17,6 +17,11 @@ namespace virtual_machine_nsp
         input_file.open(filename);
         std::string line;
         int i = beginning_address;
+        if (!input_file.is_open())
+        {
+            std::cout << "open file error." << std::endl;
+            exit(-1);
+        }
         while (!input_file.eof())
         {
             getline(input_file, line);
@@ -27,9 +32,9 @@ namespace virtual_machine_nsp
             }
             else
             {
-                std::cout<<"input error."<<std::endl;
+                std::cout << "input error." << std::endl;
                 exit(-1); //输入文件错误
-                }
+            }
         }
         while (i < kVirtualMachineMemorySize)
         {
