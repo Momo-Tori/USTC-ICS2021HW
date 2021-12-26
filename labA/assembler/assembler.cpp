@@ -723,7 +723,7 @@ int assembler::assemble(std::string input_filename, std::string output_filename)
                     break;
                 case 2:
                     // "BR"
-                    result_line += "0000000";
+                    result_line += "0000111";
                     if (parameter_list_size != 1)
                     {
                         // @ Error parameter numbers

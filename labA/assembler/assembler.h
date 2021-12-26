@@ -26,7 +26,7 @@ extern bool gIsHexMode;
 const std::vector<std::string> kLC3Commands({
     "ADD",   // 00: "0001" + reg(line[1]) + reg(line[2]) + op(line[3])
     "AND",   // 01: "0101" + reg(line[1]) + reg(line[2]) + op(line[3])
-    "BR",    // 02: "0000000" + pcoffset(line[1],9)
+    "BR",    // 02: "0000111" + pcoffset(line[1],9)
     "BRN",   // 03: "0000100" + pcoffset(line[1],9)
     "BRZ",   // 04: "0000010" + pcoffset(line[1],9)
     "BRP",   // 05: "0000001" + pcoffset(line[1],9)
