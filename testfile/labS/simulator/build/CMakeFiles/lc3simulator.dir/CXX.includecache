@@ -1,0 +1,70 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+../include/common.h
+iostream
+-
+fstream
+-
+cstdio
+-
+array
+-
+vector
+-
+cmath
+-
+climits
+-
+cstdlib
+-
+string
+-
+cstring
+-
+algorithm
+-
+boost/program_options.hpp
+-
+
+../include/memory.h
+common.h
+../include/common.h
+
+../include/register.h
+common.h
+../include/common.h
+
+../include/simulator.h
+common.h
+../include/common.h
+register.h
+../include/register.h
+memory.h
+../include/memory.h
+
+/mnt/d/Code Try/ICS/labS/simulator/src/main.cpp
+simulator.h
+/mnt/d/Code Try/ICS/labS/simulator/src/simulator.h
+
+/mnt/d/Code Try/ICS/labS/simulator/src/memory.cpp
+common.h
+/mnt/d/Code Try/ICS/labS/simulator/src/common.h
+memory.h
+/mnt/d/Code Try/ICS/labS/simulator/src/memory.h
+
+/mnt/d/Code Try/ICS/labS/simulator/src/register.cpp
+register.h
+/mnt/d/Code Try/ICS/labS/simulator/src/register.h
+bitset
+-
+
+/mnt/d/Code Try/ICS/labS/simulator/src/simulator.cpp
+simulator.h
+/mnt/d/Code Try/ICS/labS/simulator/src/simulator.h
+

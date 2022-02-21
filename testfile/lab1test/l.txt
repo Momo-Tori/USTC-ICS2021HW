@@ -1,0 +1,33 @@
+一开始确定方向就是简单求和，利用loop最终达到乘法效果
+一开始是按照while的语法进行设计，但这样会至少有一行的多于
+于是考虑do...while的设计
+起初特别考虑了r2为零的时候直接获得零值，但这样无法得到减少行数的效果，因为会增加一行判断
+之后发现根据数学证明即使不需要特殊考虑，最后结果也是为0，由此得到最终版本
+
+核心代码：
+LOOP ADD R7, R0, R7
+ADD R1, R1, #-1
+BRnp LOOP
+
+调试代码：
+.ORIG x3000 ; start the program at location x3000
+
+LOOP ADD R7, R0, R7
+ADD R1, R1, #-1
+BRnp LOOP
+
+HALT ; halt
+.END
+
+
+测试代码：
+利用c语言
+16位乘法对应short数据类型，则将其打印出来即可
+#include<stdio.h>
+int main(){
+    short a=-114,b=233,c=a*b;
+    printf("%04X\n",(unsigned short)a);
+    printf("%04X\n",(unsigned short)b);
+    printf("%04X\n",(unsigned short)c);
+    return 0;
+}

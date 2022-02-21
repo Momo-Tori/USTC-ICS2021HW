@@ -1,0 +1,3 @@
+/mnt/d/Code Try/ICS/labS/simulator/build/CMakeFiles/rebuild_cache.dir
+/mnt/d/Code Try/ICS/labS/simulator/build/CMakeFiles/edit_cache.dir
+/mnt/d/Code Try/ICS/labS/simulator/build/CMakeFiles/lc3simulator.dir

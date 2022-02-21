@@ -1,0 +1,49 @@
+计算周期方法：每个指令结束后给计数器加一
+最后计数器内存储的值即为运行指令数
+特别注意计算计数时计算跳转以及不要干扰条件码的判断
+
+核心代码：
+ADD R6,R6,x1;   R6置1用于AND判断
+LOOP2 AND R2,R1,R6; 用于判断R6的对应位是否为1，只用于设置状态码，存储无用
+BRz LOOP1;  为0的时候跳过相加
+ADD R7,R7,R0;   对应位置为1，加上R0*2^n
+LOOP1 ADD R0,R0,R0; R0*2,左移一位
+ADD R6,R6,R6;   R6左移一位，掩码位置向左移动
+BRnp LOOP2;R6非零，继续计算相加
+
+初版（单纯实现乘法）：
+.ORIG x3000 ; start the program at location x3000
+
+ADD R6,R6,x1;   R6置1用于AND判断
+LOOP2 AND R2,R1,R6; 用于判断R6的对应位是否为1，只用于设置状态码，存储无用
+BRz LOOP1;  为0的时候跳过相加
+ADD R7,R7,R0;   对应位置为1，加上R0*2^n
+LOOP1 ADD R0,R0,R0; R0*2,左移一位
+ADD R6,R6,R6;   R6左移一位，掩码位置向左移动
+BRnp LOOP2;R6非零，继续计算相加
+
+HALT ; halt
+.END
+
+加上计数后：
+.ORIG x3000 ; start the program at location x3000
+
+ADD R6,R6,x1;   R6置1用于AND判断
+
+ADD R5,R5,x1;R5为指令计数器
+
+LOOP2 ADD R5,R5,x2;
+AND R2,R1,R6; 用于判断R6的对应位是否为1，只用于设置状态码，存储无用
+BRz LOOP1;  为0的时候跳过相加
+ADD R7,R7,R0;   对应位置为1，加上R0*2^n
+ADD R5,R5,x1;
+LOOP1 ADD R0,R0,R0; R0*2,左移一位
+ADD R5,R5,x3;
+ADD R6,R6,R6;   R6左移一位，掩码位置向左移动
+BRnp LOOP2;R6非零，继续计算相加
+
+HALT ; halt
+.END
+
+
+考虑$\sum_{i=l-1}^{n-1}a_i\times 2^i=2^n-2_l$,则类似此原理，当连续的1转换为0时加上对应的2的n次方，连续的0转换为1时减去上对应的2的n次方，即Booth's multiplication algorithm，其对应实现：
